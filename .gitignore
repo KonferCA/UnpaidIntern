@@ -134,3 +134,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Firebase credentials
+firebase-service-account.json
+*-firebase-adminsdk-*.json
