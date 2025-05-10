@@ -3,6 +3,9 @@ dotenv.config();
 interface EnvConfig {
   DISCORD_TOKEN: string;
   DISCORD_CLIENT_ID: string;
+  DISCORD_GUILD_ID: string;
+  DISCORD_CHANNEL_ID: string;
+
   FIREBASE_API_KEY: string;
   FIREBASE_AUTH_DOMAIN: string;
   FIREBASE_PROJECT_ID: string;
@@ -10,7 +13,8 @@ interface EnvConfig {
   FIREBASE_MESSAGING_SENDER_ID: string;
   FIREBASE_APP_ID: string;
   FIREBASE_MEASUREMENT_ID: string;
-  COMMAND_PREFIX: string;
+
+  GOOGLE_APPLICATION_CREDENTIALS: string;
 }
 
 // Validate required environment variables
@@ -18,6 +22,9 @@ function validateEnv(): EnvConfig {
   const requiredEnvVars = [
     'DISCORD_TOKEN',
     'DISCORD_CLIENT_ID',
+    'DISCORD_GUILD_ID',
+    'DISCORD_CHANNEL_ID',
+
     'FIREBASE_API_KEY',
     'FIREBASE_AUTH_DOMAIN',
     'FIREBASE_PROJECT_ID',
@@ -25,6 +32,8 @@ function validateEnv(): EnvConfig {
     'FIREBASE_MESSAGING_SENDER_ID',
     'FIREBASE_APP_ID',
     'FIREBASE_MEASUREMENT_ID',
+
+    'GOOGLE_APPLICATION_CREDENTIALS'
   ];
 
   const missingEnvVars = requiredEnvVars.filter(
@@ -40,6 +49,9 @@ function validateEnv(): EnvConfig {
   return {
     DISCORD_TOKEN: process.env.DISCORD_TOKEN!,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
+    DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID!,
+    DISCORD_CHANNEL_ID: process.env.DISCORD_CHANNEL_ID!,
+
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY!,
     FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN!,
     FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID!,
@@ -47,8 +59,9 @@ function validateEnv(): EnvConfig {
     FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID!,
     FIREBASE_APP_ID: process.env.FIREBASE_APP_ID!,
     FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID!,
-    COMMAND_PREFIX: process.env.COMMAND_PREFIX || '!'
-  };
+
+    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS!
+ };
 }
 
 // Export validated config
