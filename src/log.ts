@@ -1,5 +1,5 @@
-export const err = (message: string) => {
-    console.error(`❌ ${message}`);
+export const err = (message: string, error?: any) => {
+    console.error(`❌ ${message}`, error);
 };
 
 export const warn = (message: string) => {
