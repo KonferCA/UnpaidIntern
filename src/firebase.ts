@@ -1,6 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDocs } from "firebase/firestore";
+import { initializeApp, applicationDefault } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 import { config } from "./config.ts";
+import serviceAccount from "../config/service.json" assert { type: "json" };
 
 const firebaseConfig = {
     apiKey: config.FIREBASE_API_KEY,
@@ -12,21 +13,21 @@ const firebaseConfig = {
     measurementId: config.FIREBASE_MEASUREMENT_ID
 };
 
-const firebase = initializeApp(firebaseConfig);
-const firestore = getFirestore(firebase);
+export const firebase = initializeApp({
+    credential: applicationDefault()
+});
 
-const getDocumentCountForCollection = async (collectionName: string) => {
-    const query = await getDocs(collection(firestore, collectionName));
+export const firestore = getFirestore(firebase);
+
+export const getDocumentCountForCollection = async (collectionName: string) => {
+    const query = await firestore.collection(collectionName).get();
     return query.size;
 }
 
-const getApplicationCount = async () => {
+export const getApplicationCount = async () => {
     return await getDocumentCountForCollection("applications");
 }
 
-const getApplicationDraftCount = async () => {
+export const getApplicationDraftCount = async () => {
     return await getDocumentCountForCollection("application-drafts");
 };
-
-
-export { firebase, firestore, getDocumentCountForCollection, getApplicationCount, getApplicationDraftCount };
