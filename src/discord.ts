@@ -79,10 +79,10 @@ const attemptReconnect = async (): Promise<void> => {
 
   isReconnecting = true;
   reconnectAttempts++;
-  console.log(`ℹ Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+  console.log(`⚡ Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
 
   if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
-    console.error('ℹ Maximum reconnection attempts reached. Giving up.');
+    console.error('⚡ Maximum reconnection attempts reached. Giving up.');
     process.exit(1);
     return;
   }
@@ -109,7 +109,7 @@ const attemptReconnect = async (): Promise<void> => {
 const startBot = async (): Promise<void> => {
   try {
     await init();
-    console.log('ℹ Connecting to Discord...');
+    console.log('⚡ Connecting to Discord...');
     await client.login(config.DISCORD_TOKEN);
     return Promise.resolve();
 
