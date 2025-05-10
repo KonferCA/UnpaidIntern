@@ -1,32 +1,23 @@
 {
   "name": "UnpaidIntern",
   "version": "1.0.0",
-  "description": "Discord bot that reads from Firebase Firestore and outputs to a channel",
-  "main": "dist/index.js",
+  "description": "",
+  "main": "src/index.ts",
+  "type": "module",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --loader ts-node/esm ./src/index.ts",
+    "start": "node --loader ts-node/esm ./src/index.ts"
   },
-  "keywords": [
-    "discord",
-    "bot",
-    "firebase",
-    "firestore"
-  ],
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "@discordjs/rest": "^2.2.0",
-    "firebase-admin": "^11.11.1",
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3",
+    "@types/node": "^22.15.17",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "firebase": "^11.7.1",
     "ts-node": "^10.9.2",
-    "@types/node": "^20.10.6",
-    "nodemon": "^3.0.2"
+    "typescript": "^5.8.3"
   }
 }

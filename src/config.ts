@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 interface EnvConfig {
   DISCORD_TOKEN: string;
   DISCORD_CLIENT_ID: string;
@@ -55,4 +54,3 @@ function validateEnv(): EnvConfig {
 // Export validated config
 export const config = validateEnv();
 export default config;
-
