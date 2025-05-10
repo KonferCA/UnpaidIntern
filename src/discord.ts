@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import {
   Client,
   GatewayIntentBits,
@@ -76,21 +77,18 @@ export const init = async (): Promise<void> => {
 
   client.on(Events.Error, (error) => {
     logger.err("Discord client error:", error);
-    if (!isReconnecting) {
+    if (!isReconnecting)
       attemptReconnect();
-    }
   });
 
-  client.on(Events.Warn, (info) => {
-    logger.warn("Discord API Warning:", info);
-  });
+  client.on(Events.Warn,
+    (info) => logger.warn("Discord API Warning:", info)
+  );
 
-  if (process.env.NODE_ENV === "development") {
-    client.on(Events.Debug, (info) => {
-      logger.debug("Discord Debug:", info);
-    });
-  }
-
+  if (process.env.NODE_ENV === "development")
+    client.on(Events.Debug,
+      (info) => logger.debug("Discord API Debug:", info)
+    );
 
 }
 
@@ -111,9 +109,8 @@ export const attemptReconnect = async (): Promise<void> => {
   }
 
   try {
-    if (client) {
+    if (client)
       await client.destroy();
-    }
 
     const backoffTime = Math.min(1000 * Math.pow(2, reconnectAttempts - 1), 30000);
     logger.info(`Waiting ${backoffTime}ms before reconnecting...`);
@@ -143,6 +140,10 @@ export const updateMessage = async () => {
       await channel.send(message);
       logger.success("Sent new message");
     }
+
+    const logFilePath = "./data/data.txt";
+    writeFileSync(logFilePath, message + "\n", { flag: "a" });
+    logger.success("Appended message to log file");
 
   setInterval(updateMessage, 1000 * 60 * 15); // 15 minutes
 }
