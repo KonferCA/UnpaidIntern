@@ -1,26 +1,30 @@
 import { config } from "./config.ts";
+import logger from "./log.ts";
 import { getApplicationCount, getApplicationDraftCount } from "./firebase.ts";
+import * as discord from "./discord.ts";
 
 /**
  * Start the application
  */
-const startApp = async () => {
+const start = async () => {
   try {
-    console.log("✅ Environment configuration loaded.");
+    logger.success("Environment configuration loaded.");
 
     try {
       const apps = await getApplicationCount();
       const drafts = await getApplicationDraftCount();
-      console.log(`✅ Connected to Firestore. apps=${apps}, drafts=${drafts}`);
+      logger.success(`Connected to Firestore. apps=${apps}, drafts=${drafts}`);
 
     } catch (error) {
-      console.error("❌ Failed to connect to Firestore:", error);
+      logger.err("Failed to connect to Firestore:", error);
       process.exit(1);
     }
 
-    console.log("✅ Discord bot is live!");
+    await discord.start();
+    logger.success("Discord bot is live!");
+
   } catch (error) {
-    console.error("Failed to start application:", error);
+    logger.err("Failed to start application:", error);
     process.exit(1);
   }
 }
@@ -29,21 +33,21 @@ const startApp = async () => {
  * Handle shutdown
  */
 const handleShutdown = () => {
-  console.log("⚡ Shutting down gracefully...");
+  logger.info("Shutting down gracefully...");
   process.exit(0);
 }
 
-console.log("⚡ Starting Discord bot with Firestore integration...");
+logger.info("Starting Discord bot with Firestore integration...");
 process.on("SIGINT", handleShutdown);
 process.on("SIGTERM", handleShutdown);
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("❌ Unhandled Rejection at:", promise, "reason:", reason);
+  logger.err("Unhandled Promise Rejection for:", reason);
 });
 
 process.on("uncaughtException", (error) => {
-  console.error("❌ Uncaught Exception:", error);
+  logger.err("Uncaught Exception:", error);
   handleShutdown();
 });
 
-startApp();
+start();
