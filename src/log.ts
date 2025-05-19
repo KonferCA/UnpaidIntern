@@ -1,20 +1,20 @@
 export const err = (message: string, error?: any) => {
-    console.error(`❌ ${message}`, error);
+    console.error(`❌ ${message}`);
 };
 
-export const warn = (message: string) => {
+export const warn = (message: string, warning?: any) => {
     console.warn(`⚠️ ${message}`);
 };
 
-export const info = (message: string) => {
+export const info = (message: string, info?: any) => {
     console.info(`ℹ️ ${message}`);
 };
 
-export const success = (message: string) => {
+export const success = (message: string, success?: string) => {
     console.log(`✅ ${message}`);
 };
 
-export const debug = (message: string) => {
+export const debug = (message: string, debug?: string) => {
     console.debug(`🐛 ${message}`);
 };
 

@@ -31,3 +31,26 @@ export const getApplicationCount = async () => {
 export const getApplicationDraftCount = async () => {
     return await getDocumentCountForCollection("application-drafts");
 };
+
+export const getApplicationByPersonFirstName = async (firstName: string) => {
+    const query = await firestore.collection("applications").where("firstName", "==", firstName).get();
+    if (query.empty)
+        return null;
+
+    return query.docs[0].data();
+}
+export const getApplicationByPersonLastName = async (lastName: string) => {
+    const query = await firestore.collection("applications").where("lastName", "==", lastName).get();
+    if (query.empty)
+        return null;
+
+    return query.docs[0].data();
+}
+
+export const getApplicationByPersonEmail = async (email: string) => {
+    const query = await firestore.collection("applications").where("email", "==", email.toLowerCase()).get();
+    if (query.empty)
+        return null;
+
+    return query.docs[0].data();
+}
