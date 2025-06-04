@@ -170,52 +170,25 @@ const formatStats = async () => {
 }
 
 const _formatStats = async () => {
-  const currentAppCount = await getApplicationCount();
-  const currentDraftCount = await getApplicationDraftCount();
-  const applicationsLiveDate = new Date(2025, 5, 6); // May 6th, 2025
-  const applicationsCloseDate = new Date(2025, 6, 9); // June 9th, 2025
-  const currentDate = new Date();
-  const daysUntilClose = Math.floor((applicationsCloseDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
-  const weeksUntilClose = (daysUntilClose / 7).toFixed(2);
-  const overallApplicationPeriodDayCount = Math.floor((applicationsCloseDate.getTime() - applicationsLiveDate.getTime()) / (1000 * 60 * 60 * 24));
-  const overallApplicationPeriodWeekCount = (overallApplicationPeriodDayCount / 7).toFixed(2);
-
-  // these are the parameters we are using to calculate the number of applications needed to reach a certain number of attendees
-  // we are using 50% and 80% attrition rates
-  // we are using 1500 and 2000 attendees as the target
   const targetAttendeeMin = 1500;
   const targetAttendeeMax = 2000;
   const mlhAttritionRate = 0.5;
   const konferAttritionRate = 0.8;
 
-  // what is the current apps per day rate
-  const overallCurrentAppsPerDay = currentAppCount / overallApplicationPeriodDayCount;
-  const currentAppsPerDay = currentAppCount / daysUntilClose;
-  const currentDraftAppsPerDay = currentDraftCount / daysUntilClose;
+  const submittedAppCount = await getApplicationCount();
+  const totalAppCount = await getApplicationDraftCount();
+  const draftAppCount = totalAppCount - submittedAppCount;
 
-  // how many apps do we need so we can have a certain number of attendees, using 50% and 80% attrition.
-  const appsRequiredForAttendeeMinUsingMLH = targetAttendeeMin / mlhAttritionRate;
-  const appsRequiredForAttendeeMaxUsingMLH = targetAttendeeMax / mlhAttritionRate;
-  const appsRequiredForAttendeeMinUsingKonfer = targetAttendeeMin / konferAttritionRate;
-  const appsRequiredForAttendeeMaxUsingKonfer = targetAttendeeMax / konferAttritionRate;
+  const applicationsLiveDate = new Date(1746590399000); // May 6th, 2025
+  const applicationsCloseDate = new Date(1749527999000); // June 9th, 2025
+  const currentDate = new Date();
 
-  // how many apps do we need to reach 1500 and 2000 attendees over the entire application period.
-  const overallAppsPerDayRateFor1500UsingMLH = appsRequiredForAttendeeMinUsingMLH / overallApplicationPeriodDayCount;
-  const overallAppsPerDayRateFor2000UsingMLH = appsRequiredForAttendeeMaxUsingMLH / overallApplicationPeriodDayCount;
-  const overallAppsPerDayRateFor1500UsingKonfer = appsRequiredForAttendeeMinUsingKonfer / overallApplicationPeriodDayCount;
-  const overallAppsPerDayRateFor2000UsingKonfer = appsRequiredForAttendeeMaxUsingKonfer / overallApplicationPeriodDayCount;
-
-  // what apps per day rate is needed to reach 1500 and 2000 attendees from now onward.
-  const appsPerDayRateFor1500UsingMLH = appsRequiredForAttendeeMinUsingMLH / daysUntilClose;
-  const appsPerDayRateFor2000UsingMLH = appsRequiredForAttendeeMaxUsingMLH / daysUntilClose;
-  const appsPerDayRateFor1500UsingKonfer = appsRequiredForAttendeeMinUsingKonfer / daysUntilClose;
-  const appsPerDayRateFor2000UsingKonfer = appsRequiredForAttendeeMaxUsingKonfer / daysUntilClose;
-
-  // how different is the current apps per day rate from the apps per day rate needed to reach 1500 and 2000 attendees.
-  const appsPerDayDiffFor1500UsingMLH = appsPerDayRateFor1500UsingMLH - currentAppsPerDay;
-  const appsPerDayDiffFor2000UsingMLH = appsPerDayRateFor2000UsingMLH - currentAppsPerDay;
-  const appsPerDayDiffFor1500UsingKonfer = appsPerDayRateFor1500UsingKonfer - currentAppsPerDay;
-  const appsPerDayDiffFor2000UsingKonfer = appsPerDayRateFor2000UsingKonfer - currentAppsPerDay;
+  const totalApplicationPeriodDayCount = Math.floor(Math.abs(applicationsCloseDate.getTime() - applicationsLiveDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysUntilClose = Math.floor(Math.abs(applicationsCloseDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+  const overallAppsPerDay = totalAppCount / totalApplicationPeriodDayCount;
+  const projectedAppsWithCurrentRate = totalAppCount + (overallAppsPerDay * daysUntilClose);
+  const projectedAttendanceWithMLHRate = projectedAppsWithCurrentRate * mlhAttritionRate;
+  const projectedAttendanceWithKonferRate = projectedAppsWithCurrentRate * konferAttritionRate;
 
   return new EmbedBuilder()
     .setColor(0x0099FF)
@@ -224,36 +197,22 @@ const _formatStats = async () => {
 	  .setDescription("Updated every hour. In case of no update, contact Nausher!")
 	  .setThumbnail("https://i.imgur.com/AfFp7pu.png")
 	  .addFields(
-      { name: "Time Until Apps Close", value: `${daysUntilClose} days / ${weeksUntilClose} weeks`, inline: true },
-      { name: "Overall Application Period Length", value: `${overallApplicationPeriodDayCount} days / ${overallApplicationPeriodWeekCount} weeks`, inline: true },
-      { name: `MLH Avg Attrition Rate "attr"`, value: `${mlhAttritionRate * 100}%`, inline: true },
-      { name: `Konfer Avg Attrition Rate "attr"`, value: `${konferAttritionRate * 100}%`, inline: true },
+      { name: "Apps Close In", value: `${daysUntilClose} days`, inline: true },
+      { name: "Overall Application Period", value: `${totalApplicationPeriodDayCount} days`, inline: true },
+      { name: `MLH Avg Attrition Rate`, value: `${mlhAttritionRate * 100}%`, inline: true },
+      { name: `Konfer Avg Attrition Rate`, value: `${konferAttritionRate * 100}%`, inline: true },
       { name: "\u200B", value: "\u200B" },
-		  { name: "Current Apps", value: currentAppCount.toString(), inline: true },
-      { name: "Current Drafts", value: currentDraftCount.toString(), inline: true },
-      { name: `Current Overall APD`, value: overallCurrentAppsPerDay.toFixed(2).toString(), inline: false },
-      { name: `Current APD`, value: currentAppsPerDay.toFixed(2).toString(), inline: false },
-      { name: `Current DPD`, value: currentDraftAppsPerDay.toFixed(2).toString(), inline: true },
+		  { name: "Submitted Apps", value: submittedAppCount.toString(), inline: true },
+		  { name: "Draft Apps", value: draftAppCount.toString(), inline: true },
+      { name: "Total Apps", value: totalAppCount.toString(), inline: true },
       { name: "\u200B", value: "\u200B" },
-      { name: "Apps needed for 1,500 attendees @ 50% attr", value: appsRequiredForAttendeeMinUsingMLH.toFixed(2).toString(), inline: false },
-      { name: "Apps needed for 2,000 attendees @ 50% attr", value: appsRequiredForAttendeeMaxUsingMLH.toFixed(2).toString(), inline: false },
-      { name: "Apps needed for 1,500 attendees @ 80% attr", value: appsRequiredForAttendeeMinUsingKonfer.toFixed(2).toString(), inline: false },
-      { name: "Apps needed for 2,000 attendees @ 80% attr", value: appsRequiredForAttendeeMaxUsingKonfer.toFixed(2).toString(), inline: false },
+      { name: `Overall Apps Per Day`, value: overallAppsPerDay.toFixed(2).toString(), inline: false },
+      { name: `Projected Apps With Current Rate`, value: projectedAppsWithCurrentRate.toFixed(2).toString(), inline: false },
       { name: "\u200B", value: "\u200B" },
-      { name: "oAPD needed for 1,500 attendees @ 50% attr", value: overallAppsPerDayRateFor1500UsingMLH.toFixed(2).toString(), inline: false },
-      { name: "oAPD needed for 2,000 attendees @ 50% attr", value: overallAppsPerDayRateFor2000UsingMLH.toFixed(2).toString(), inline: false },
-      { name: "oAPD needed for 1,500 attendees @ 80% attr", value: overallAppsPerDayRateFor1500UsingKonfer.toFixed(2).toString(), inline: false },
-      { name: "oAPD needed for 2,000 attendees @ 80% attr", value: overallAppsPerDayRateFor2000UsingKonfer.toFixed(2).toString(), inline: false },
-      { name: "\u200B", value: "\u200B" },
-      { name: "cAPD needed for 1,500 attendees @ 50% attr", value: appsPerDayRateFor1500UsingMLH.toFixed(2).toString(), inline: false },
-      { name: "cAPD needed for 2,000 attendees @ 50% attr", value: appsPerDayRateFor2000UsingMLH.toFixed(2).toString(), inline: false },
-      { name: "cAPD needed for 1,500 attendees @ 80% attr", value: appsPerDayRateFor1500UsingKonfer.toFixed(2).toString(), inline: false },
-      { name: "cAPD needed for 2,000 attendees @ 80% attr", value: appsPerDayRateFor2000UsingKonfer.toFixed(2).toString(), inline: false },
-      // { name: "\u200B", value: "\u200B" },
-      // { name: "cAPD Diff for 1,500 attendees @ 50% attr", value: appsPerDayDiffFor1500UsingMLH.toFixed(2).toString(), inline: false },
-      // { name: "cAPD Diff for 2,000 attendees @ 50% attr", value: appsPerDayDiffFor2000UsingMLH.toFixed(2).toString(), inline: false },
-      // { name: "cAPD Diff for 1,500 attendees @ 80% attr", value: appsPerDayDiffFor1500UsingKonfer.toFixed(2).toString(), inline: false },
-      // { name: "cAPD Diff for 2,000 attendees @ 80% attr", value: appsPerDayDiffFor2000UsingKonfer.toFixed(2).toString(), inline: false }
+      { name: `Target Attendee Min`, value: targetAttendeeMin.toString(), inline: true },
+      { name: `Target Attendee Max`, value: targetAttendeeMax.toString(), inline: true },
+      { name: `Projected Attendance With MLH Rate`, value: projectedAttendanceWithMLHRate.toFixed(2).toString(), inline: true },
+      { name: `Projected Attendance With Konfer Rate`, value: projectedAttendanceWithKonferRate.toFixed(2).toString(), inline: true }
     )
 	  .setTimestamp()
 	  .setFooter({ text: `Last updated  ${new Date().toLocaleString()}`, iconURL: "https://i.imgur.com/AfFp7pu.png" });
